@@ -21,6 +21,11 @@ services:
     entrypoint: docker/entrypoints/rails.sh
     command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chatgrow.rule=Host(`chatgrow.nexgrow.xyz`)"
+      - "traefik.http.routers.chatgrow.entrypoints=websecure"
+      - "traefik.http.routers.chatgrow.tls.certresolver=letsencrypt"
 
   sidekiq:
     <<: *base
@@ -45,7 +50,7 @@ services:
       - POSTGRES_DB=chatwoot
       - POSTGRES_USER=postgres
       # Please provide your own password.
-      - POSTGRES_PASSWORD=
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   redis:
     image: redis:alpine
